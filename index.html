@@ -6,12 +6,14 @@
   </head>
   <body>
     <button id="setupBtn">Start app</button>
-    <button id="soundBtn" hidden>Make a sound!</button>
+    <button id="startBtn" hidden>Start sound</button>
+    <button id="stopBtn" hidden disabled>Stop sound</button>
     <pre id="output"></pre>
     <script>
       let ready = false;
       const setupBtn = document.getElementById("setupBtn");
-      const soundBtn = document.getElementById("soundBtn");
+      const startBtn = document.getElementById("startBtn");
+      const stopBtn = document.getElementById("stopBtn");
       const output = document.getElementById("output");
 
       function log(msg) {
@@ -23,21 +25,29 @@
         const audioContext = new AudioContext();
         log("Audio context ready");
 
-        soundBtn.onclick = () => {
-          const oscillator = audioContext.createOscillator();
+        let oscillator;
+
+        startBtn.onclick = () => {
+          oscillator = audioContext.createOscillator();
           oscillator.type = "sine";
           oscillator.frequency.value = 440;
-
           oscillator.connect(audioContext.destination);
           oscillator.start(audioContext.currentTime);
           log("Sound started");
-          setTimeout(() => {
-            oscillator.disconnect();
-            log("Sound stopped");
-          }, 1000);
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
         };
 
-        soundBtn.hidden = false;
+        stopBtn.onclick = async () => {
+          oscillator.disconnect();
+          oscillator = null;
+          log("Sound stopped");
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+        };
+
+        startBtn.hidden = false;
+        stopBtn.hidden = false;
         setupBtn.hidden = true;
       };
     </script>
