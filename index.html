@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sound example</title>
+  </head>
+  <body>
+    <button id="setupBtn">Start app</button>
+    <button id="soundBtn" hidden>Make a sound!</button>
+    <pre id="output"></pre>
+    <script>
+      let ready = false;
+      const setupBtn = document.getElementById("setupBtn");
+      const soundBtn = document.getElementById("soundBtn");
+      const output = document.getElementById("output");
+
+      function log(msg) {
+        console.log(msg);
+        output.innerHTML += msg + "\n";
+      }
+
+      setupBtn.onclick = async () => {
+        const audioContext = new AudioContext();
+        log("Audio context ready");
+
+        soundBtn.onclick = () => {
+          const oscillator = audioContext.createOscillator();
+          oscillator.type = "sine";
+          oscillator.frequency.value = 440;
+
+          oscillator.connect(audioContext.destination);
+          oscillator.start(audioContext.currentTime);
+          log("Sound started");
+          setTimeout(() => {
+            oscillator.disconnect();
+            log("Sound stopped");
+          }, 1000);
+        };
+
+        soundBtn.hidden = false;
+        setupBtn.hidden = true;
+      };
+    </script>
+  </body>
+</html>
